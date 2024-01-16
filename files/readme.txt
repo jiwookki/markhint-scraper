@@ -1,0 +1,1 @@
+This is the default directory where the scraper will store the scraped files.
