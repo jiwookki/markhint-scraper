@@ -8,7 +8,7 @@ import threading
 
 
 
-def download_qs(url):
+def download_qs(download_path, url):
 
     def get_path(driver_name):
         if platform.system() == "Windows":
@@ -52,7 +52,6 @@ def download_qs(url):
 
             driver = webdriver.Edge(service=service, options=options)
         return driver
-        return driver
 
     def download_image(image_url, image_filename):
         
@@ -69,16 +68,21 @@ def download_qs(url):
     
 
 
-    def download_page_sequence(link_list, ndriver=None):
+    def download_page_sequence(download_path, link_list, ndriver=None):
+        print(f"down path: {download_path}")
         if not ndriver:
             ndriver = load_webdriver()
         
         for link in link_list:
-            download_page(link, ndriver=ndriver)
+            download_page(download_path, link, ndriver=ndriver)
         
         ndriver.quit()
 
-    def download_page(page_link, ndriver=None):
+    def download_page(download_path, page_link, ndriver=None):
+
+        print(type(page_link))
+
+        assert isinstance(page_link, str)
 
         if not ndriver:
             ndriver = load_webdriver()
@@ -90,22 +94,22 @@ def download_qs(url):
 
 
         questions = ndriver.find_elements(By.CSS_SELECTOR,
-                                         "div.sc-iFoMEM.jzBULz")
+                                         NEXT_QUESTION_SELECTOR)
 
         #questions = driver.find_elements(By.TAG_NAME, "div")
         print(f"{str(len(questions) + 1)} questions found in section")
 
         # get image and answer from first question (preselected)
         time.sleep(1)
-        image_url = get_image_url(ndriver, "img.sc-jsTgWu.iWQSTV")
-        filename = DOWNLOAD_PATH + image_url.split("/")[
+        image_url = get_image_url(ndriver, QUESTION_CONTENT_SELECTOR)
+        filename = download_path + image_url.split("/")[
             len(image_url.split("/")) - 1]
 
         download_image(image_url, filename)
-        ndriver.find_element(By.CSS_SELECTOR, "div.sc-dkKxlM.bXWxeN").click()
+        ndriver.find_element(By.CSS_SELECTOR, ANSWER_SWITCH_SELECTOR).click()
 
 
-        answer_element = ndriver.find_element(By.CSS_SELECTOR, "div.sc-fxTzYC.cGrxys")
+        answer_element = ndriver.find_element(By.CSS_SELECTOR, ANSWER_CONTENT_SELECTOR)
 
         with open(filename[0:len(filename) - 4] + "_ans.txt", "w") as txtfile:
             txtfile.write(answer_element.text)
@@ -117,8 +121,8 @@ def download_qs(url):
 
             question.click()
 
-            image_url = get_image_url(ndriver, "img.sc-jsTgWu.iWQSTV")
-            filename = DOWNLOAD_PATH + image_url.split("/")[
+            image_url = get_image_url(ndriver, QUESTION_CONTENT_SELECTOR)
+            filename = download_path + image_url.split("/")[
                 len(image_url.split("/")) - 1]
 
             download_image(image_url, filename)
@@ -126,12 +130,12 @@ def download_qs(url):
             # click on answer button and download answer file
             #print("clicking answer button")
             ndriver.find_element(By.CSS_SELECTOR,
-                                "div.sc-dkKxlM.bXWxeN").click()
+                                ANSWER_SWITCH_SELECTOR).click()
             
             
 
             
-            answer_element = ndriver.find_element(By.CSS_SELECTOR, "div.sc-fxTzYC.cGrxys")
+            answer_element = ndriver.find_element(By.CSS_SELECTOR, ANSWER_CONTENT_SELECTOR)
 
             with open(filename[0:len(filename) - 4] + "_ans.txt", "w") as txtfile:
                 txtfile.write(answer_element.text)
@@ -156,9 +160,9 @@ def download_qs(url):
     time.sleep(3)
     print("loaded page")
 
-    sections = driver.find_elements(By.CSS_SELECTOR, "div.sc-kiPvrU.dSfZgv")
+    sections = driver.find_elements(By.CSS_SELECTOR, SECTONS_SELECTOR)
 
-    section_threads.append(threading.Thread(target=download_page, args=[URL]))
+    section_threads.append(threading.Thread(target=download_page, args=[download_path, url]))
 
     section_urls = []
 
@@ -173,7 +177,7 @@ def download_qs(url):
 
     for section in range(1, len(sections) + 1):
         # print(URL[:-1] + str(section))
-        section_urls.append(URL[:-1] + str(section))
+        section_urls.append(url[:-1] + str(section))
 
     
 
@@ -185,13 +189,13 @@ def download_qs(url):
 
 
     for x in range(0, WEBDRIVER_THREADS):
-        th = threading.Thread(target=download_page_sequence, args=([section_urls[prev_index:prev_index + slice_size]]))
+        th = threading.Thread(target=download_page_sequence, args=(download_path, section_urls[prev_index:prev_index + slice_size]))
         
         section_threads.append(th)
         prev_index += slice_size
     
     
-    th = threading.Thread(target=download_page_sequence, args=([section_urls[prev_index:len(section_urls)]]))
+    th = threading.Thread(target=download_page_sequence, args=(download_path, section_urls[prev_index:len(section_urls)]))
     section_threads.append(th)
 
     for th in section_threads:
@@ -225,8 +229,23 @@ WEBDRIVER = "Firefox"
 WEBDRIVER_THREADS = 15
 
 
+
+# --- CONFIGURATIONS FOR QUESTION/ANSWER DETECTION 
+
+SECTONS_SELECTOR = "div.sc-kiPvrU.dSfZgv" # switch between question tabs (top row)
+
+QUESTION_CONTENT_SELECTOR = "img.sc-iFoMEM.gasiHQ" # used to identify the question itself
+
+ANSWER_SWITCH_SELECTOR = "div.sc-iJbNxu.jhHMPe" # clicked to switch from question to answer
+
+ANSWER_CONTENT_SELECTOR = "div.sc-ZqGJI.gYNSLd" # used to identify the correct answer
+
+NEXT_QUESTION_SELECTOR = "div.sc-fIhvWL.gCHBxw" # used to select the next question in the list
+
+
+
 def main():
-    download_qs(URL)
+    download_qs(DOWNLOAD_PATH, URL)
 
 
 if __name__ == "__main__":
