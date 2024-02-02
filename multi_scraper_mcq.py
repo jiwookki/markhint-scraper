@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 import os
 import platform
 import threading
+from pathlib import Path
 
 
 
@@ -19,9 +20,9 @@ def download_qs(download_path, url):
     def load_webdriver():
         driver = None
         if WEBDRIVER.upper() == "CHROME":
-            print("WEBDRIVER: CHROME")
+            #print("WEBDRIVER: CHROME")
             execpath = get_path("chromedriver")
-            print(execpath)
+            #print(execpath)
             service = webdriver.ChromeService(executable_path=execpath)
             options = webdriver.ChromeOptions()
             if HEADLESS:
@@ -30,9 +31,9 @@ def download_qs(download_path, url):
             driver = webdriver.Chrome(service=service, options=options)
 
         elif WEBDRIVER.upper() == "FIREFOX":
-            print("WEBDRIVER: FIREFOX")
+            #print("WEBDRIVER: FIREFOX")
             execpath = get_path("geckodriver")
-            print(execpath)
+            #print(execpath)
             service = webdriver.FirefoxService(executable_path=execpath)
             #service = webdriver.FirefoxService()
             options = webdriver.FirefoxOptions()
@@ -41,9 +42,9 @@ def download_qs(download_path, url):
 
             driver = webdriver.Firefox(service=service, options=options)
         elif WEBDRIVER.upper() == "EDGE":
-            print("WEBDRIVER: EDGE")
+            #print("WEBDRIVER: EDGE")
             execpath = get_path("msedgedriver")
-            print(execpath)
+            #print(execpath)
             service = webdriver.EdgeService(executable_path=execpath)
             #service = webdriver.FirefoxService()
             options = webdriver.EdgeOptions()
@@ -75,12 +76,13 @@ def download_qs(download_path, url):
         
         for link in link_list:
             download_page(download_path, link, ndriver=ndriver)
-        
+
+        ndriver.close()
         ndriver.quit()
 
     def download_page(download_path, page_link, ndriver=None):
 
-        print(type(page_link))
+        #print(type(page_link))
 
         assert isinstance(page_link, str)
 
@@ -140,6 +142,7 @@ def download_qs(download_path, url):
             with open(filename[0:len(filename) - 4] + "_ans.txt", "w") as txtfile:
                 txtfile.write(answer_element.text)
             print(filename[0:len(filename) - 4] + "_ans.txt")
+        
             
 
             
@@ -183,20 +186,44 @@ def download_qs(download_path, url):
 
     prev_index = 0
 
-    slice_size = len(section_urls)//WEBDRIVER_THREADS
+    # slice_size = len(section_urls)//WEBDRIVER_THREADS
 
-    print(f"{str(slice_size)} pages per thread")
+    # print(f"{str(slice_size)} pages per thread")
 
 
-    for x in range(0, WEBDRIVER_THREADS):
-        th = threading.Thread(target=download_page_sequence, args=(download_path, section_urls[prev_index:prev_index + slice_size]))
+    # for x in range(0, WEBDRIVER_THREADS):
+    #     th = threading.Thread(target=download_page_sequence, args=(download_path, section_urls[prev_index:prev_index + slice_size]))
         
+    #     section_threads.append(th)
+    #     prev_index += slice_size
+    
+    
+    # th = threading.Thread(target=download_page_sequence, args=(download_path, section_urls[prev_index:len(section_urls)]))
+    # section_threads.append(th)
+
+    section_urls_list = []
+    for x in range(0, WEBDRIVER_THREADS):
+        section_urls_list.append([])
+
+    sxc = 0    
+    
+    for url in section_urls:
+        section_urls_list[sxc].append(url)
+        sxc+=1
+        if sxc == WEBDRIVER_THREADS-1:
+            sxc = 0
+    
+    for url_slice in section_urls_list:
+        th = threading.Thread(target=download_page_sequence, args=(download_path, url_slice))
         section_threads.append(th)
-        prev_index += slice_size
-    
-    
-    th = threading.Thread(target=download_page_sequence, args=(download_path, section_urls[prev_index:len(section_urls)]))
-    section_threads.append(th)
+
+
+    Path(download_path).mkdir(parents=True, exist_ok=True)
+
+
+
+
+
 
     for th in section_threads:
         th.start()
@@ -232,7 +259,7 @@ WEBDRIVER_THREADS = 15
 
 # --- CONFIGURATIONS FOR QUESTION/ANSWER DETECTION 
 
-SECTONS_SELECTOR = "div.sc-kiPvrU.dSfZgv" # switch between question tabs (top row)
+SECTONS_SELECTOR = "div.sc-eVspGN.eFbVqx" # switch between question tabs (top row)
 
 QUESTION_CONTENT_SELECTOR = "img.sc-iFoMEM.gasiHQ" # used to identify the question itself
 

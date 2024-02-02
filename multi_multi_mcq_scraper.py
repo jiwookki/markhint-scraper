@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import os 
+from pathlib import Path
 import platform 
 import time
 import multi_scraper_mcq
@@ -61,7 +62,7 @@ def get_topics():
     print(topic_dropdown.find_element(By.CSS_SELECTOR, "div.sc-bWOGAC.dTkoAY"))
     topics = topic_dropdown.find_element(By.CSS_SELECTOR, "div.sc-bWOGAC.dTkoAY").find_elements(By.CSS_SELECTOR, "div.sc-dEVLtI.lYhMC")
     #topics = topic_dropdown.find_element(By.CSS_SELECTOR, "div.sc-bWOGAC.dTkoAY").find_elements(By.CSS_SELECTOR, "div.sc-eGugkK.dDccTP")
-    print(len(topics))
+    print(f"{str(len(topics))} topics found")
     topic_texts = []
     for topic in topics:
         topic_texts.append(topic.text)
