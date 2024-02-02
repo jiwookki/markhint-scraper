@@ -76,8 +76,10 @@ def get_topics():
 
 
 def download_all_topics_qs(topics, base_url):
+    keyword = "&topics="
     for topic in topics:
-        multi_scraper_mcq.download_qs(topic, base_url.format(link=topic))
+        print(base_url[:base_url.find(keyword)] + topic + base_url[base_url.find(keyword)+len(keyword):])
+        multi_scraper_mcq.download_qs(OUTPUT_BASE_DIRECTORY + topic + "/", base_url[:base_url.find(keyword) + len(keyword)] + topic + base_url[base_url.find(keyword) + len(keyword):])
 
     
 
@@ -92,6 +94,8 @@ DOWNLOAD_LINK = ""
 
 OUTPUT_FILENAME = "topics.txt"
 
+OUTPUT_BASE_DIRECTORY = "files/"
+
 WEBDRIVER = "Firefox"
 
 HEADLESS = False
@@ -102,6 +106,6 @@ TOPIC_LIST = []
 
 if __name__ == "__main__":
     TOPIC_LIST, DOWNLOAD_LINK = get_topics()
-    #download_all_topics_qs(TOPIC_LIST)
+    download_all_topics_qs(TOPIC_LIST, DOWNLOAD_LINK)
 
 
