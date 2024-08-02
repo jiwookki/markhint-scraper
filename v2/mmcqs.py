@@ -10,12 +10,27 @@ from urllib import parse
 
 
 
-def download_topic_qs(download_path, url):
+def get_topic_qs_threads(download_path, url):
+
+    global TOPIC_THREADS
 
     # this function is single threaded
 
+
+    def create_edge_driver():
+        path = "./msedgedriver.exe"
+        
+        service = webdriver.EdgeService(executable_path=path)
+
+        options = webdriver.EdgeOptions()
+        options.add_argument("-headless")
+
+        driver = webdriver.Edge(options=options, service=service)
+        return driver
+
     def create_driver():
-        path = "./geckodriver"
+        #path = "./geckodriver"
+        path = "./geckodriver.exe"
 
         service = webdriver.FirefoxService(executable_path=path)
 
@@ -24,6 +39,7 @@ def download_topic_qs(download_path, url):
 
         options = webdriver.FirefoxOptions()
         options.add_argument("-headless")
+        options.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
 
         driver = webdriver.Firefox(options=options, service=service)
 
@@ -190,36 +206,62 @@ def download_topic_qs(download_path, url):
     
     Path(download_path).mkdir(parents=True, exist_ok=True)
 
-    for url_slice in section_urls_list:
-        # th = threading.Thread(target=download_page_sequence, args=(download_path, url_slice))
-        # section_threads.append(th)
-        download_page_sequence(download_path, url_slice, ndriver=driver)
-
     driver.quit()
 
-    print("downloaded all files")
+    for urls in section_urls_list:
+        print(urls)
+
+    # time.sleep(5)
+
+    for urls in section_urls_list:
+        # th = threading.Thread(target=download_page_sequence, args=(download_path, url_slice))
+        # section_threads.append(th)
+        th = threading.Thread(target=download_page_sequence, args=(download_path, urls))
+        TOPIC_THREADS.append(th)
+    
+
 
 
 
 def download_subject(topics):
+    global TOPIC_THREADS
 
     baseurl = BASE.replace("[[SUBJECT]]", SUBJECT)
     baseurl = baseurl.replace("[[PAPERS]]", PAPERS)
 
-    topic_threads = []
+    print(baseurl)
+    time.sleep(5)
+
+    TOPIC_THREADS = []
+
+    tgetthreads = []
 
     for topic in topics:
+
         newurl = baseurl.replace("[[TOPICS]]", parse.quote(topic))
-        th = threading.Thread(target=download_topic_qs, args=(DOWNLOAD_PATH+topic+"/", newurl))
-        topic_threads.append(th)
+        # th = threading.Thread(target=get_topic_qs_threads, args=(DOWNLOAD_PATH+topic+"/", newurl))
+        
+        #nt = get_topic_qs_threads(DOWNLOAD_PATH+topic+"/", newurl)
+        nt = threading.Thread(target=get_topic_qs_threads, args=(DOWNLOAD_PATH+topic+"/", newurl))
+
+        tgetthreads.append(nt)
+
+    for tgh in tgetthreads:
+        tgh.start()
+
+    for tgh in tgetthreads:
+        tgh.join()
+
 
     print("start download")
 
-    for th in topic_threads:
+    for th in TOPIC_THREADS:
         th.start()
     
-    for th in topic_threads:
+    for th in TOPIC_THREADS:
         th.join()
+
+    print("all done")
 
     
         
@@ -228,16 +270,21 @@ def download_subject(topics):
 # Configuration options below
 
 
-SUBJECT = "0620"
+SUBJECT = "0625"
+
 # https://markhint.in/topical/igcse/0620/results?papers=&topics=&years=&sessions=&variants=&levels=&units=&difficulty=&page=0
+
 # BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?"
+
 BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?papers=[[PAPERS]]&topics=[[TOPICS]]&years=&sessions=&variants=&levels=&units=&difficulty=&page=0"
+
 # example [[PAPERS]] = 1%20(Core);2%20(Extended)
+
 # example [[TOPICS]] = CH%201%20-%20STATES%20OF%20MATTER
-# example [[topics]] = CH%201%20-%20STATES%20OF%20MATTER
+
 # example [[SUBJECT]] = 0620
 
-PAPERS = "1%20(Core);2%20(Extended)"
+PAPERS = "2%20(Extended)"
 
 
 OUTF = "topics.txt"
@@ -262,21 +309,21 @@ WEBDRIVER = "Firefox"
 DRIVERTYPE = webdriver.Safari
 
 # amount of web instances that can be run at one time, for multithreading purpose. If set to one, will run as if single threaded.
-WEBDRIVER_THREADS = 1
+WEBDRIVER_THREADS = 3
 
 
 
 # --- CONFIGURATIONS FOR QUESTION/ANSWER DETECTION 
 
-SECTONS_SELECTOR = "div.sc-eVspGN.eFbVqx" # switch between question tabs (top row)
+SECTONS_SELECTOR = "div.sc-eYqcxL.ZJhRy" # switch between question tabs (top row)
 
-QUESTION_CONTENT_SELECTOR = "img.sc-iFoMEM.gasiHQ" # used to identify the question itself
+QUESTION_CONTENT_SELECTOR = "img.sc-gkSfol.kBYqqH" # used to identify the question itself
 
-ANSWER_SWITCH_SELECTOR = "div.sc-iJbNxu.jhHMPe" # clicked to switch from question to answer
+ANSWER_SWITCH_SELECTOR = "div.sc-elAWhN.bksjud" # clicked to switch from question to answer
 
-ANSWER_CONTENT_SELECTOR = "div.sc-ZqGJI.gYNSLd" # used to identify the correct answer
+ANSWER_CONTENT_SELECTOR = "div.sc-cLNonn.faNhRA" # used to identify the correct answer
 
-NEXT_QUESTION_SELECTOR = "div.sc-fIhvWL.gCHBxw" # used to select the next question in the list
+NEXT_QUESTION_SELECTOR = "div.sc-hjjlnc.cxFfoP" # used to select the next question in the list
 
 
 

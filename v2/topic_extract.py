@@ -10,8 +10,8 @@ import time
 
 URL = '''https://markhint.in/topical'''
 
-def create_firefox_driver():
-    path = "./geckodriver"
+def create_driver():
+    path = "./geckodriver.exe"
 
     service = webdriver.FirefoxService(executable_path=path)
 
@@ -20,13 +20,14 @@ def create_firefox_driver():
 
     options = webdriver.FirefoxOptions()
     #options.add_argument("-headless")
+    options.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
 
     driver = webdriver.Firefox(options=options, service=service)
 
     return driver
 
 
-def create_driver():
+def create_safari_driver():
 
     #path = "safaridriver"
 
@@ -148,7 +149,7 @@ def get_topics(driver):
 
     print("\n\n")
     
-    select_dropdown(driver, "Subject", 2)
+    select_dropdown(driver, "Subject", 7)
 
     time.sleep(1)
 
