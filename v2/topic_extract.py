@@ -2,7 +2,7 @@
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
+from urllib import parse
 import time
 
 
@@ -66,9 +66,8 @@ def get_topics(driver):
 
     def _get_in_dropdowns(driver):
         return driver.find_elements(By.CSS_SELECTOR, "div.sc-cZFQFd.bokGRY")
-
-
-    def select_dropdown(driver, dropdown_text, index):
+    
+    def click_dropdown(driver, dropdown_text):
         dropdowns = _get_in_dropdowns(driver)
 
         time.sleep(0.5)
@@ -81,6 +80,13 @@ def get_topics(driver):
                 dropdown.click()
                 print("clicked")
                 sdrop = dropdown
+        return sdrop
+
+
+    def select_dropdown(driver, dropdown_text, index):
+
+        time.sleep(0.5)
+        click_dropdown(driver, dropdown_text)
         #boarddropdown.click()
 
         time.sleep(1)
@@ -94,20 +100,7 @@ def get_topics(driver):
 
     
     def find_select_dropdown(driver, dropdown_text, index_text):
-        dropdowns = _get_in_dropdowns(driver)
-
-        time.sleep(0.5)
-        sdrop = None
-
-        for dropdown in dropdowns:
-            print(dropdown.text)
-            print(dropdown)
-            if dropdown_text in dropdown.text:
-                dropdown.click()
-                print("clicked")
-                sdrop = dropdown
-        #boarddropdown.click()
-
+        click_dropdown(driver, dropdown_text)
         time.sleep(1)
         #dropdowns[1].click()
 
@@ -120,14 +113,7 @@ def get_topics(driver):
                 break
     
     def get_all_dropdowns(driver, dropdown_text):
-        dropdowns = _get_in_dropdowns(driver)
-        for dropdown in dropdowns:
-            print(dropdown.text)
-            print(dropdown)
-            if dropdown_text in dropdown.text:
-                dropdown.click()
-                print("clicked")
-                sdrop = dropdown
+        click_dropdown(driver, dropdown_text)
         #boarddropdown.click()
 
         time.sleep(1)
@@ -174,6 +160,9 @@ def get_topics(driver):
 
     time.sleep(0.5)
 
+    #click_dropdown(driver, "Topics")
+
+
     topics = get_all_dropdowns(driver, "Topics")
 
     # find_select_dropdown(driver, "Topics", topic)
@@ -194,11 +183,20 @@ def get_topics(driver):
 
 
 SUBJECT = "0620"
+# https://markhint.in/topical/igcse/0620/results?papers=&topics=&years=&sessions=&variants=&levels=&units=&difficulty=&page=0
+# BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?"
+BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?papers=[[PAPERS]]&topics=[[TOPICS]]&years=&sessions=&variants=&levels=&units=&difficulty=&page=0"
+# example [[PAPERS]] = 1%20(Core);2%20(Extended)
+# example [[TOPICS]] = CH%201%20-%20STATES%20OF%20MATTER
+# example [[topics]] = CH%201%20-%20STATES%20OF%20MATTER
+# example [[SUBJECT]] = 0620
 
-BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?"
+OUTF = "topics.txt"
 
-BASE_DIR = "./files/"
 
+
+#https://markhint.in/topical/igcse/0620/results?papers=1%20(Core);2%20(Extended)&topics=CH%201%20-%20STATES%20OF%20MATTER&years=&sessions=&variants=&levels=&units=&difficulty=&page=0
+#https://markhint.in/topical/igcse/0620/results?papers=1%20(Core);2%20(Extended)&topics=&years=&sessions=&variants=&levels=&units=&difficulty=&page=0
 
 
 def main():
@@ -207,7 +205,15 @@ def main():
         
 
         
-        print(get_topics(driver))
+        t = get_topics(driver)
+        print(f"got {str(len(t))} topics")
+
+        outp = "\n".join(t.keys())
+
+        with open(OUTF, "w") as of:
+            of.write(outp)
+        
+        print("done")
 
 
     except Exception as ex:
