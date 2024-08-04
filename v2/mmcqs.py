@@ -171,7 +171,7 @@ def get_topic_qs_threads(download_path, url):
     driver = create_driver()
     driver.get(url)
     print("wating for page to load")
-    time.sleep(3)
+    time.sleep(5)
     print("loaded page")
 
     sections = driver.find_elements(By.CSS_SELECTOR, SECTONS_SELECTOR)
@@ -200,16 +200,18 @@ def get_topic_qs_threads(download_path, url):
     
     for url in section_urls:
         section_urls_list[sxc].append(url)
-        sxc+=1
+        
         if sxc == WEBDRIVER_THREADS-1:
             sxc = 0
+        else:
+            sxc+=1
     
     Path(download_path).mkdir(parents=True, exist_ok=True)
 
     driver.quit()
 
     for urls in section_urls_list:
-        print(urls)
+        print(urls[-2:])
 
     # time.sleep(5)
 
@@ -220,7 +222,15 @@ def get_topic_qs_threads(download_path, url):
         TOPIC_THREADS.append(th)
     
 
+def cleaned(filename: str):
+    # remove characters that are not allowed in filenames
 
+    disallowed = ":;"
+
+    for d in disallowed:
+        filename = filename.replace(d, " ")
+    
+    return filename
 
 
 def download_subject(topics):
@@ -230,11 +240,19 @@ def download_subject(topics):
     baseurl = baseurl.replace("[[PAPERS]]", PAPERS)
 
     print(baseurl)
-    time.sleep(5)
+    time.sleep(2)
 
     TOPIC_THREADS = []
 
     tgetthreads = []
+
+    for topic in topics:
+        newurl = baseurl.replace("[[TOPICS]]", parse.quote(topic))
+        print(cleaned(DOWNLOAD_PATH+topic+"/"))
+        print(newurl)
+        print("\n")
+
+    time.sleep(5)
 
     for topic in topics:
 
@@ -242,7 +260,7 @@ def download_subject(topics):
         # th = threading.Thread(target=get_topic_qs_threads, args=(DOWNLOAD_PATH+topic+"/", newurl))
         
         #nt = get_topic_qs_threads(DOWNLOAD_PATH+topic+"/", newurl)
-        nt = threading.Thread(target=get_topic_qs_threads, args=(DOWNLOAD_PATH+topic+"/", newurl))
+        nt = threading.Thread(target=get_topic_qs_threads, args=(cleaned(DOWNLOAD_PATH+topic+"/"), newurl))
 
         tgetthreads.append(nt)
 
@@ -251,6 +269,13 @@ def download_subject(topics):
 
     for tgh in tgetthreads:
         tgh.join()
+
+
+    print("got all topics")
+
+    time.sleep(5)
+
+    
 
 
     print("start download")
@@ -270,7 +295,7 @@ def download_subject(topics):
 # Configuration options below
 
 
-SUBJECT = "0625"
+SUBJECT = "0455"
 
 # https://markhint.in/topical/igcse/0620/results?papers=&topics=&years=&sessions=&variants=&levels=&units=&difficulty=&page=0
 
@@ -284,7 +309,7 @@ BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?papers=[[PAPERS]]&
 
 # example [[SUBJECT]] = 0620
 
-PAPERS = "2%20(Extended)"
+PAPERS = "1"
 
 
 OUTF = "topics.txt"
@@ -309,7 +334,7 @@ WEBDRIVER = "Firefox"
 DRIVERTYPE = webdriver.Safari
 
 # amount of web instances that can be run at one time, for multithreading purpose. If set to one, will run as if single threaded.
-WEBDRIVER_THREADS = 3
+WEBDRIVER_THREADS = 2
 
 
 

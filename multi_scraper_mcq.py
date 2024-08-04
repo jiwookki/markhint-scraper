@@ -238,7 +238,7 @@ def download_qs(download_path, url):
 # Configuration options below
 
 # URL of the page to scrape. Example of what the page should look like is provided as "example.png" .
-URL = '''https://markhint.in/topical/igcse/0625/results?papers=2%20(Extended)&topics=&years=&sessions=&variants=&levels=&units=&difficulty=&page=0'''
+URL = '''https://markhint.in/topical/igcse/0455/results?papers=1&topics=CH%201%20-%20Basic%20Economic%20Problem%3A%20Choice%20And%20The%20Allocation%20Of%20Resources&years=&sessions=&variants=&levels=&units=&difficulty=&page=0'''
 
 
 
@@ -259,15 +259,15 @@ WEBDRIVER_THREADS = 15
 
 # --- CONFIGURATIONS FOR QUESTION/ANSWER DETECTION 
 
-SECTONS_SELECTOR = "div.sc-eVspGN.eFbVqx" # switch between question tabs (top row)
+SECTONS_SELECTOR = "div.sc-eYqcxL.ZJhRy" # switch between question tabs (top row)
 
-QUESTION_CONTENT_SELECTOR = "img.sc-iFoMEM.gasiHQ" # used to identify the question itself
+QUESTION_CONTENT_SELECTOR = "img.sc-gkSfol.kBYqqH" # used to identify the question itself
 
-ANSWER_SWITCH_SELECTOR = "div.sc-iJbNxu.jhHMPe" # clicked to switch from question to answer
+ANSWER_SWITCH_SELECTOR = "div.sc-elAWhN.bksjud" # clicked to switch from question to answer
 
-ANSWER_CONTENT_SELECTOR = "div.sc-ZqGJI.gYNSLd" # used to identify the correct answer
+ANSWER_CONTENT_SELECTOR = "div.sc-cLNonn.faNhRA" # used to identify the correct answer
 
-NEXT_QUESTION_SELECTOR = "div.sc-fIhvWL.gCHBxw" # used to select the next question in the list
+NEXT_QUESTION_SELECTOR = "div.sc-hjjlnc.cxFfoP" # used to select the next question in the list
 
 
 

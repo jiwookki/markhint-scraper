@@ -9,8 +9,7 @@ def show_dir(dir, level):
     ctr = 0
 
     for f in os.listdir(dir):
-
-        if f[-4:] in IGN: print(level*IND+f)
+        if f[-4:] not in IGN: print(level*IND+f)
 
         if os.path.isfile(dir+"/"+f) == False:
             ctr += show_dir(dir+"/"+f, level + 1)

@@ -1,11 +1,8 @@
-CH 1 - MEASUREMENTS AND UNITS
-CH 2 - FORCES AND MOTION
-CH 3 - FORCES AND PRESSURE
-CH 4 - FORCES AND ENERGY
-CH 5 - THERMAL EFFECTS
-CH 6 - WAVES AND SOUNDS
-CH 7 - RAYS AND WAVES
-CH 8 - ELECTRICITY
-CH 9 - MAGNETS AND CURRENTS
-CH 10 - ELECTRON AND ELECTRONICS
-CH 11 - ATOMS AND RADIOACTIVITY
+CH 1 - Basic Economic Problem: Choice And The Allocation Of Resources
+CH 2 - The Allocation Of Resources: How The Market Works; Market Failure
+CH 3 - The Individual As Producer, Consumer And Borrower
+CH 4 - The Private Firm As Producer And Employer
+CH 5 - Role Of Government In Economy
+CH 6 - Economic Indicators
+CH 7 - Developed And Developing Economies: Trends In Production, Population And Living Standards
+CH 8 - International Aspects

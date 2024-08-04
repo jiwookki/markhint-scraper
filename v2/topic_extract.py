@@ -149,17 +149,17 @@ def get_topics(driver):
 
     print("\n\n")
     
-    select_dropdown(driver, "Subject", 7)
+    select_dropdown(driver, "Subject", 3)
 
     time.sleep(1)
 
-    select_dropdown(driver, "Paper", 0)
+    # select_dropdown(driver, "Paper", 0)
 
-    time.sleep(0.2)
+    # time.sleep(0.2)
 
-    select_dropdown(driver, "Paper", 1)
+    # select_dropdown(driver, "Paper", 1)
 
-    time.sleep(0.5)
+    # time.sleep(0.5)
 
     #click_dropdown(driver, "Topics")
 
@@ -183,7 +183,7 @@ def get_topics(driver):
 
 
 
-SUBJECT = "0620"
+SUBJECT = "0610"
 # https://markhint.in/topical/igcse/0620/results?papers=&topics=&years=&sessions=&variants=&levels=&units=&difficulty=&page=0
 # BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?"
 BASE = "https://markhint.in/topical/igcse/[[SUBJECT]]/results?papers=[[PAPERS]]&topics=[[TOPICS]]&years=&sessions=&variants=&levels=&units=&difficulty=&page=0"
